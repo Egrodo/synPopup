@@ -1,5 +1,5 @@
-const { app, BrowserWindow, globalShortcut } = require('electron');
-const Positioner = require('electron-positioner');
+const electron = require('electron');
+const { app, BrowserWindow, globalShortcut } = electron;
 
 let win;
 
@@ -21,8 +21,14 @@ function createWindow() {
     },
   });
 
-  const positioned = new Positioner(win);
-  positioned.move('bottomRight');
+  // Calculate correct monitor to show on depending on where cursor is.
+  const point = electron.screen.getCursorScreenPoint();
+  const rectangle = electron.screen.getDisplayNearestPoint(point).workArea;
+  const display = electron.screen.getDisplayMatching(rectangle);
+  win.setPosition(
+    display.workArea.x + display.workArea.width - 405,
+    display.workArea.y + display.workArea.height - 155,
+  );
 
   win.loadURL('http://localhost:3000');
   win.webContents.openDevTools();
@@ -41,7 +47,16 @@ function createOrOpenWindow() {
   if (!win) {
     createWindow();
   } else {
-    win.show();
+    // Calculate correct monitor to show on depending on where cursor is.
+    const point = electron.screen.getCursorScreenPoint();
+    const rectangle = electron.screen.getDisplayNearestPoint(point).workArea;
+    const display = electron.screen.getDisplayMatching(rectangle);
+    win.setPosition(
+      display.workArea.x + display.workArea.width - 405,
+      display.workArea.y + display.workArea.height - 155,
+    );
+
+    win.showInactive();
     win.webContents.openDevTools();
   }
 }
