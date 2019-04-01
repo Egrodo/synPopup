@@ -1,9 +1,9 @@
 const electron = require('electron');
-const { app, BrowserWindow, globalShortcut } = electron;
+const { app, BrowserWindow, globalShortcut, Menu, Tray } = electron;
 
 let win;
 
-// require('electron-react-devtools').install()
+// TODO: Tray icon
 function createWindow() {
   win = new BrowserWindow({
     width: 400,
@@ -33,12 +33,11 @@ function createWindow() {
   win.loadURL('http://localhost:3000');
   win.webContents.openDevTools();
 
-  win.on('close', e => {
-    e.preventDefault();
-    win.hide();
-  });
+  // Disable moving / resizing window
+  win.addListener('will-move', e => e.preventDefault());
+  win.addListener('will-resize', e => e.preventDefault());
 
-  win.on('closed', () => {
+  win.addListener('closed', () => {
     win = null;
   });
 }
@@ -56,19 +55,9 @@ function createOrOpenWindow() {
       display.workArea.y + display.workArea.height - 155,
     );
 
-    win.showInactive();
-    win.webContents.openDevTools();
+    win.show();
   }
 }
-
-// Make it so it runs in the background and doesn't close.
-function watchCommand() {
-  console.log('Ready');
-  const ret = globalShortcut.register('CommandOrControl+B', createOrOpenWindow);
-  if (!ret) throw new Error('Keystroke registration failed.');
-}
-
-app.on('ready', watchCommand);
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
@@ -76,4 +65,23 @@ app.on('window-all-closed', () => {
 
 app.on('activate', () => {
   if (win === null) createWindow();
+});
+
+// On start of app
+app.on('ready', () => {
+  // Register keystroke ctrl+shift+'
+  const ret = globalShortcut.register("CommandOrControl+Shift+'", createOrOpenWindow);
+  if (!ret) throw new Error('Keystroke registration failed.');
+
+  // Initialize tray icon
+  const tray = new Tray('/Users/egrodo/Documents/code/synPopup/main/src/icon.ico');
+  const contextMenu = Menu.buildFromTemplate([
+    { label: 'Open', click: createOrOpenWindow },
+    { label: 'Quit', role: 'quit' },
+  ]);
+  tray.setToolTip('Quick Synonym Finder');
+  tray.setContextMenu(contextMenu);
+  tray.addListener('click', createOrOpenWindow);
+
+  console.log('Ready');
 });
