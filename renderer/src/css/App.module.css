@@ -7,26 +7,28 @@
 }
 
 .label {
-  color: #ff2200;
+  color: #f64d6e;
   font-size: 25px;
   margin: 0.2em 0 0.8em 0;
   font-weight: 500;
+  cursor: default;
+  user-select: none;
 }
 
 .inputContainer {
   border: 1px solid black;
   background-color: white;
   margin: 0 1em;
-  height: 3em;
+  height: 2.5em;
 }
 
 .input {
-  color: #ff2200;
-  height: 2em;
+  color: #f64d6e;
+  height: 1.5em;
   width: 80%;
   border: none;
   font-size: 20px;
-  line-height: 2em;
+  line-height: 1em;
   text-align: center;
 }
 

@@ -1,7 +1,7 @@
 const electron = require('electron');
 const { app, BrowserWindow, globalShortcut, Menu, Tray } = electron;
 
-let win;
+let win, tray;
 
 function createWindow() {
   win = new BrowserWindow({
@@ -27,7 +27,7 @@ function createWindow() {
   const display = electron.screen.getDisplayMatching(rectangle);
   win.setPosition(
     display.workArea.x + display.workArea.width - 405,
-    display.workArea.y + display.workArea.height - 155,
+    display.workArea.y + display.workArea.height / 2 - 75,
   );
 
   win.setSize(400, 150);
@@ -40,6 +40,7 @@ function createWindow() {
 
   win.addListener('closed', () => {
     win = null;
+    tray = null;
   });
 }
 
@@ -53,7 +54,7 @@ function createOrOpenWindow() {
     const display = electron.screen.getDisplayMatching(rectangle);
     win.setPosition(
       display.workArea.x + display.workArea.width - 405,
-      display.workArea.y + display.workArea.height - 155,
+      display.workArea.y + display.workArea.height / 2 - 75,
     );
 
     win.show();
@@ -75,7 +76,7 @@ app.on('ready', () => {
   if (!ret) throw new Error('Keystroke registration failed.');
 
   // Initialize tray icon
-  const tray = new Tray('/Users/egrodo/Documents/code/synPopup/main/src/icon.ico');
+  tray = new Tray('/Users/egrodo/Documents/code/synPopup/main/src/icon.ico');
   const contextMenu = Menu.buildFromTemplate([
     { label: 'Open', click: createOrOpenWindow },
     { label: 'Quit', role: 'quit' },

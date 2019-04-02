@@ -1,10 +1,30 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useReducer, useEffect, useRef } from 'react';
+import ResultsDisplay from './ResultsDisplay';
 import CSS from './css/App.module.css';
 
 // If loses focus for longer than 5 seconds, fade out.
 // On fadeout or close, clear all internal data and window.close()
 function App() {
   const [input, setInput] = useState('');
+  const [results, dispatch] = useReducer((prevState, action) => {
+    switch (action.type) {
+      case 'success':
+        return {
+          error: false,
+          errorMsg: '',
+          result: action.results,
+        };
+      case 'error':
+        return {
+          error: true,
+          errorMsg: action.errorMsg,
+          results: [],
+        };
+      default:
+        return prevState;
+    }
+  }, {});
+
   const timerRef = useRef(null);
   const inpRef = useRef(null);
 
@@ -18,13 +38,13 @@ function App() {
 
   const hideWin = () => {
     // // Fade transparency, then hide window entirely.
-    // document.body.style.opacity = 0;
-    // document.body.style.background = 'rgba(236, 236, 219, 0)';
-    // setTimeout(() => {
-    //   setInput('');
-    //   window.electron.remote.getCurrentWindow().hide();
-    //   if (timerRef.current) window.clearTimeout(timerRef.current);
-    // }, 800);
+    document.body.style.opacity = 0;
+    document.body.style.background = 'rgba(236, 236, 219, 0)';
+    setTimeout(() => {
+      setInput('');
+      window.electron.remote.getCurrentWindow().hide();
+      if (timerRef.current) window.clearTimeout(timerRef.current);
+    }, 800);
   };
 
   const isBlurred = () => {
@@ -40,6 +60,20 @@ function App() {
 
     // Also focus input box when app is focused.
     inpRef.current.focus();
+  };
+
+  const onSubmit = async e => {
+    e.preventDefault();
+    if (!input) return false;
+
+    try {
+      const resp = await fetch(`https://api.datamuse.com/words?rel_syn=${input}`);
+      const json = await resp.json();
+      if (!json.length) throw new Error(`No synonyms found for word "${input}"`);
+      dispatch({ type: 'success', results: json });
+    } catch ({ message }) {
+      dispatch({ type: 'error', errorMsg: message });
+    }
   };
 
   useEffect(() => {
@@ -70,20 +104,32 @@ function App() {
     };
   }, []);
 
+  useEffect(() => {
+    console.log(results);
+  }, [results]);
+
   return (
     <div className={CSS.App}>
       <section className={CSS.Main}>
         <p className={CSS.label}>Synonym Search</p>
         <div className={CSS.inputContainer}>
-          <input
-            className={CSS.input}
-            value={input}
-            onChange={({ target }) => setInput(target.value)}
-            ref={inpRef}
-            autoFocus
-          />
+          <form onSubmit={onSubmit}>
+            <input
+              className={CSS.input}
+              value={input}
+              onChange={({ target }) => setInput(target.value)}
+              onSubmit={onSubmit}
+              ref={inpRef}
+              placeholder="Type word here..."
+              maxLength={30}
+              autoComplete="off"
+              autoCorrect="off"
+              autoFocus
+            />
+          </form>
         </div>
       </section>
+      {/* <ResultsDisplay results={results} /> */}
     </div>
   );
 }
