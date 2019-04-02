@@ -1,18 +1,42 @@
-.Header {
-  background-color: #3a3a3a;
-  width: 100%;
-  height: 25px;
-}
-
 .Header > button {
   float: right;
 }
 
-.inputContainer {
-  padding: 1em;
+.Main {
   text-align: center;
 }
 
+.label {
+  color: #ff2200;
+  font-size: 25px;
+  margin: 0.2em 0 0.8em 0;
+  font-weight: 500;
+}
+
+.inputContainer {
+  border: 1px solid black;
+  background-color: white;
+  margin: 0 1em;
+  height: 3em;
+}
+
 .input {
-  text-align: left;
+  color: #ff2200;
+  height: 2em;
+  width: 80%;
+  border: none;
+  font-size: 20px;
+  line-height: 2em;
+  text-align: center;
+}
+
+.input::selection {
+  background-color: #4d4d4d;
+  color: white;
+}
+
+.input:active,
+.input:focus {
+  border-bottom: 1px solid #6d6d6d;
+  outline: none;
 }

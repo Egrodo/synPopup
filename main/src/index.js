@@ -3,7 +3,6 @@ const { app, BrowserWindow, globalShortcut, Menu, Tray } = electron;
 
 let win;
 
-// TODO: Tray icon
 function createWindow() {
   win = new BrowserWindow({
     width: 400,
@@ -15,6 +14,7 @@ function createWindow() {
     title: 'Synonym Searcher',
     darkTheme: true,
     frame: false,
+    autoHideMenuBar: true,
     webPreferences: {
       nodeIntegration: false,
       preload: __dirname + '/preload.js',
@@ -30,6 +30,7 @@ function createWindow() {
     display.workArea.y + display.workArea.height - 155,
   );
 
+  win.setSize(400, 150);
   win.loadURL('http://localhost:3000');
   win.webContents.openDevTools();
 
@@ -83,5 +84,6 @@ app.on('ready', () => {
   tray.setContextMenu(contextMenu);
   tray.addListener('click', createOrOpenWindow);
 
+  createWindow();
   console.log('Ready');
 });
