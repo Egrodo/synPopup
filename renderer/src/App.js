@@ -6,6 +6,7 @@ import CSS from './css/App.module.css';
 // On fadeout or close, clear all internal data and window.close()
 function App() {
   const [input, setInput] = useState('');
+  const [msg, setMsg] = useState('');
   const [result, dispatch] = useReducer(
     (prevState, action) => {
       switch (action.type) {
@@ -19,7 +20,7 @@ function App() {
           return {
             error: true,
             errorMsg: action.errorMsg,
-            words: [],
+            words: prevState.words,
           };
         default:
           return prevState;
@@ -29,8 +30,10 @@ function App() {
   );
 
   const AppRef = useRef();
-  const timerRef = useRef();
+  const hideTimerRef = useRef();
+  const msgTimerRef = useRef();
   const inpRef = useRef();
+  const msgRef = useRef();
 
   const showWin = () => {
     document.body.style.opacity = 1;
@@ -42,25 +45,25 @@ function App() {
   };
 
   const hideWin = () => {
-    // // Fade transparency, then hide window entirely.
-    document.body.style.opacity = 0;
-    AppRef.current.style.opacity = 0;
-    AppRef.current.style.background = 'rgba(236, 236, 219, 0)';
-    setTimeout(() => {
-      setInput('');
-      window.electron.remote.getCurrentWindow().hide();
-      if (timerRef.current) window.clearTimeout(timerRef.current);
-    }, 800);
+    // Fade transparency, then hide window entirely.
+    // document.body.style.opacity = 0;
+    // AppRef.current.style.opacity = 0;
+    // AppRef.current.style.background = 'rgba(236, 236, 219, 0)';
+    // setTimeout(() => {
+    //   setInput('');
+    //   window.electron.remote.getCurrentWindow().hide();
+    //   if (hideTimerRef.current) window.clearTimeout(hideTimerRef.current);
+    // }, 800);
   };
 
   const isBlurred = () => {
     // Hide the window after 4s of being blurred.
-    timerRef.current = window.setTimeout(hideWin, 5000);
+    hideTimerRef.current = window.setTimeout(hideWin, 4000);
   };
 
   const isFocused = () => {
     // If focused, check if there's a timer going. If there is, cancel it.
-    if (timerRef.current) window.clearTimeout(timerRef.current);
+    if (hideTimerRef.current) window.clearTimeout(hideTimerRef.current);
   };
 
   const onSubmit = async e => {
@@ -70,7 +73,7 @@ function App() {
     try {
       const resp = await fetch(`https://api.datamuse.com/words?rel_syn=${input}`);
       const json = await resp.json();
-      if (!json.length) throw new Error(`No synonyms found for word "${input}"`);
+      if (!json.length) throw new Error(`No synonyms found for "${input}"`);
       dispatch({ type: 'success', words: json });
     } catch ({ message }) {
       dispatch({ type: 'error', errorMsg: message });
@@ -78,6 +81,21 @@ function App() {
 
     setInput('');
     inpRef.current.focus();
+  };
+
+  const displayMsg = newMsg => {
+    console.log(newMsg);
+    setMsg(newMsg);
+    msgRef.current.style.opacity = 1;
+    if (msgTimerRef.current) {
+      // If there's already a timer going, reset it so the message stays for 5s.
+      window.clearTimeout(msgTimerRef.current);
+    }
+
+    msgTimerRef.current = window.setTimeout(() => {
+      msgRef.current.style.opacity = 0;
+      msgTimerRef.current = null;
+    }, 5000);
   };
 
   useEffect(() => {
@@ -109,12 +127,19 @@ function App() {
     };
   }, []);
 
-  // useEffect(() => {
-  //   if (result.words.length) {
-  //     // Animate expanding of elements.
-  //     console.log(result);
-  //   }
-  // }, [result.words]);
+  useEffect(() => {
+    if (result.error) {
+      displayMsg(result.errorMsg);
+    } else if (msg) {
+      // If there's a message still there but it's not needed anymore, remove it.
+      setMsg('');
+      msgRef.current.style.opacity = 0;
+    }
+  }, [result]);
+
+  const changeHeight = addedHeight => {
+    AppRef.current.style.maxHeight = `${188 + addedHeight}px`;
+  };
 
   return (
     <div className={CSS.App} ref={AppRef}>
@@ -137,8 +162,12 @@ function App() {
           </form>
         </div>
       </section>
-      {result.words.length && <WordsDisplay words={result.words} />}
-      {result.error && <p>No words</p>}
+      {Boolean(result.words.length) && (
+        <WordsDisplay words={result.words} displayMsg={displayMsg} changeHeight={changeHeight} />
+      )}
+      <p className={CSS.msg} ref={msgRef}>
+        {msg}
+      </p>
     </div>
   );
 }
