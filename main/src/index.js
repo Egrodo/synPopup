@@ -6,7 +6,7 @@ let win, tray;
 function createWindow() {
   win = new BrowserWindow({
     width: 400,
-    height: 150,
+    height: 400,
     transparent: true,
     skipTaskbar: true,
     fullscreenable: false,
@@ -27,10 +27,9 @@ function createWindow() {
   const display = electron.screen.getDisplayMatching(rectangle);
   win.setPosition(
     display.workArea.x + display.workArea.width - 405,
-    display.workArea.y + display.workArea.height / 2 - 75,
+    display.workArea.y + (display.workArea.height / 5) * 2 - 75,
   );
 
-  win.setSize(400, 150);
   win.loadURL('http://localhost:3000');
   win.webContents.openDevTools();
 
@@ -54,7 +53,7 @@ function createOrOpenWindow() {
     const display = electron.screen.getDisplayMatching(rectangle);
     win.setPosition(
       display.workArea.x + display.workArea.width - 405,
-      display.workArea.y + display.workArea.height / 2 - 75,
+      display.workArea.y + (display.workArea.height / 5) * 2 - 75,
     );
 
     win.show();

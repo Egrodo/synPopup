@@ -1,3 +1,13 @@
+.App {
+  height: 150px;
+  width: 100%;
+  border: 2px solid #f64d6e;
+  transition: background 1s, opacity 0.8s;
+  box-shadow: inset 0 0 20px 5px #f64d6e;
+  background: rgb(236, 236, 219);
+  padding: 1em;
+}
+
 .Header > button {
   float: right;
 }
