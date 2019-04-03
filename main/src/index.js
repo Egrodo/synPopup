@@ -27,15 +27,23 @@ function createWindow() {
   const display = electron.screen.getDisplayMatching(rectangle);
   win.setPosition(
     display.workArea.x + display.workArea.width - 405,
-    display.workArea.y + (display.workArea.height / 5) * 2 - 75,
+    display.workArea.y + display.workArea.height / 5 - 75,
   );
 
-  win.loadURL('http://localhost:3000');
-  win.webContents.openDevTools();
+  if (process.env.NODE_ENV === 'dev') {
+    win.loadURL('http://localhost:3000');
+    win.webContents.openDevTools();
+  } else {
+    win.loadURL(`file://${process.resourcesPath}/build/html/index.html`);
+  }
 
   // Disable moving / resizing window
   win.addListener('will-move', e => e.preventDefault());
   win.addListener('will-resize', e => e.preventDefault());
+
+  win.addListener('close', e => {
+    app.quit();
+  });
 
   win.addListener('closed', () => {
     win = null;
@@ -53,7 +61,7 @@ function createOrOpenWindow() {
     const display = electron.screen.getDisplayMatching(rectangle);
     win.setPosition(
       display.workArea.x + display.workArea.width - 405,
-      display.workArea.y + (display.workArea.height / 5) * 2 - 75,
+      display.workArea.y + display.workArea.height / 5 - 75,
     );
 
     win.show();
@@ -65,7 +73,9 @@ app.on('window-all-closed', () => {
 });
 
 app.on('activate', () => {
-  if (win === null) createWindow();
+  if (win === null) {
+    createWindow();
+  } else win.show();
 });
 
 // On start of app

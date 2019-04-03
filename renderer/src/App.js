@@ -46,14 +46,14 @@ function App() {
 
   const hideWin = () => {
     // Fade transparency, then hide window entirely.
-    // document.body.style.opacity = 0;
-    // AppRef.current.style.opacity = 0;
-    // AppRef.current.style.background = 'rgba(236, 236, 219, 0)';
-    // setTimeout(() => {
-    //   setInput('');
-    //   window.electron.remote.getCurrentWindow().hide();
-    //   if (hideTimerRef.current) window.clearTimeout(hideTimerRef.current);
-    // }, 800);
+    document.body.style.opacity = 0;
+    AppRef.current.style.opacity = 0;
+    AppRef.current.style.background = 'rgba(236, 236, 219, 0)';
+    setTimeout(() => {
+      setInput('');
+      window.electron.remote.getCurrentWindow().hide();
+      if (hideTimerRef.current) window.clearTimeout(hideTimerRef.current);
+    }, 800);
   };
 
   const isBlurred = () => {
@@ -84,7 +84,6 @@ function App() {
   };
 
   const displayMsg = newMsg => {
-    console.log(newMsg);
     setMsg(newMsg);
     msgRef.current.style.opacity = 1;
     if (msgTimerRef.current) {
@@ -95,7 +94,7 @@ function App() {
     msgTimerRef.current = window.setTimeout(() => {
       msgRef.current.style.opacity = 0;
       msgTimerRef.current = null;
-    }, 5000);
+    }, 3000);
   };
 
   useEffect(() => {
@@ -128,13 +127,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (result.error) {
-      displayMsg(result.errorMsg);
-    } else if (msg) {
-      // If there's a message still there but it's not needed anymore, remove it.
-      setMsg('');
-      msgRef.current.style.opacity = 0;
-    }
+    if (result.error) displayMsg(result.errorMsg);
   }, [result]);
 
   const changeHeight = addedHeight => {
