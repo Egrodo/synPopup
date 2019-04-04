@@ -19,7 +19,6 @@ function WordsDisplay({ words, displayMsg, changeHeight }) {
     displayMsg(`Copied "${str}" to clipboard`);
   };
 
-  // TODO: On receive of new words, save last height and keep that height for .6s while it transitions.
   useEffect(() => {
     // On first load and on word list change, update height for animation.
     if (dispRef.current) {

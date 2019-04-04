@@ -1,5 +1,7 @@
 const electron = require('electron');
-const { app, BrowserWindow, globalShortcut, Menu, Tray } = electron;
+const url = require('url');
+const path = require('path');
+const { app, BrowserWindow, globalShortcut, Menu, Tray, protocol } = electron;
 
 let win, tray;
 
@@ -30,11 +32,18 @@ function createWindow() {
     display.workArea.y + display.workArea.height / 5 - 75,
   );
 
+
   if (process.env.NODE_ENV === 'dev') {
     win.loadURL('http://localhost:3000');
     win.webContents.openDevTools();
   } else {
-    win.loadURL(`file://${process.resourcesPath}/build/html/index.html`);
+    const startUrl = url.format({
+      pathname: 'index.html',
+      protocol: 'file',
+      slashes: true,
+    });
+
+    win.loadURL(startUrl);
   }
 
   // Disable moving / resizing window
@@ -93,6 +102,15 @@ app.on('ready', () => {
   tray.setToolTip('Quick Synonym Finder');
   tray.setContextMenu(contextMenu);
   tray.addListener('click', createOrOpenWindow);
+
+  // Intercept React file calls and replace absolute with relative URLs.
+  protocol.interceptFileProtocol('file', (request, callback) => {
+    const url = request.url.substr(7);
+    const fixedPath = path.normalize(`${__dirname}/../../build/${url}`);
+    callback({ path: fixedPath });
+  }, (err) => {
+    if (err) console.error('Failed to register protocol');
+  });
 
   createWindow();
   console.log('Ready');

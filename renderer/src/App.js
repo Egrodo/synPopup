@@ -42,6 +42,7 @@ function App() {
 
     // Focus input box
     inpRef.current.focus();
+    inpRef.current.select();
   };
 
   const hideWin = () => {
@@ -50,7 +51,6 @@ function App() {
     AppRef.current.style.opacity = 0;
     AppRef.current.style.background = 'rgba(236, 236, 219, 0)';
     setTimeout(() => {
-      setInput('');
       window.electron.remote.getCurrentWindow().hide();
       if (hideTimerRef.current) window.clearTimeout(hideTimerRef.current);
     }, 800);
@@ -79,8 +79,8 @@ function App() {
       dispatch({ type: 'error', errorMsg: message });
     }
 
-    setInput('');
     inpRef.current.focus();
+    inpRef.current.select();
   };
 
   const displayMsg = newMsg => {
@@ -146,7 +146,7 @@ function App() {
               onChange={({ target }) => setInput(target.value)}
               onSubmit={onSubmit}
               ref={inpRef}
-              placeholder="Type word here..."
+              placeholder="Find a synonym..."
               maxLength={30}
               autoComplete="off"
               autoCorrect="off"
