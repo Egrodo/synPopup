@@ -3,7 +3,6 @@
 # dependencies
 /main/node_modules
 /main/build
-/main/dist
 /renderer/node_modules
 /.pnp
 .pnp.js

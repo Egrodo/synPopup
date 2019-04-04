@@ -1,0 +1,17 @@
+directories:
+  output: dist
+  buildResources: build
+electronVersion: 4.1.3
+appId: com.popupSynonyms
+productName: Synonyms Anywhere
+win:
+  target: NSIS
+  icon: build/icon.ico
+extraResources:
+  - filter:
+      - tmp/**/*
+      - data/*.db
+      - build/**/*
+files:
+  - filter:
+      - src/**/*
