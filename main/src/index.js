@@ -93,15 +93,22 @@ app.on('ready', () => {
   const ret = globalShortcut.register("CommandOrControl+Shift+'", createOrOpenWindow);
   if (!ret) throw new Error('Keystroke registration failed.');
 
-  // Initialize tray icon
-  tray = new Tray('/Users/egrodo/Documents/code/synPopup/main/src/icon.ico');
-  const contextMenu = Menu.buildFromTemplate([
-    { label: 'Open', click: createOrOpenWindow },
-    { label: 'Quit', role: 'quit' },
-  ]);
-  tray.setToolTip('Quick Synonym Finder');
-  tray.setContextMenu(contextMenu);
-  tray.addListener('click', createOrOpenWindow);
+  // // Initialize tray icon
+  // const icoPath = url.format({
+  //   pathname: path.normalize(`${__dirname}/icon.ico`),
+  //   protocol: 'file',
+  //   slashes: true,
+  // });
+
+  // tray = new Tray(icoPath);
+  // const contextMenu = Menu.buildFromTemplate([
+  //   { label: 'Open', click: createOrOpenWindow },
+  //   { label: 'Quit', role: 'quit' },
+  // ]);
+  // tray.setToolTip('Quick Synonym Finder');
+  // tray.setContextMenu(contextMenu);
+
+  // tray.addListener('click', createOrOpenWindow);
 
   // Intercept React file calls and replace absolute with relative URLs.
   protocol.interceptFileProtocol('file', (request, callback) => {
