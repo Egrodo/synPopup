@@ -15,3 +15,5 @@ extraResources:
 files:
   - filter:
       - src/**/*
+      - src/*
+      - icon.png

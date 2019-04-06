@@ -1,7 +1,7 @@
 const electron = require('electron');
 const url = require('url');
 const path = require('path');
-const { app, BrowserWindow, globalShortcut, Menu, Tray, protocol } = electron;
+const { app, BrowserWindow, globalShortcut, Menu, Tray, protocol, nativeImage } = electron;
 
 let win, tray;
 
@@ -17,6 +17,7 @@ function createWindow() {
     darkTheme: true,
     frame: false,
     autoHideMenuBar: true,
+    icon: __dirname + 'icon.png',
     webPreferences: {
       nodeIntegration: false,
       preload: __dirname + '/preload.js',
@@ -93,22 +94,16 @@ app.on('ready', () => {
   const ret = globalShortcut.register("CommandOrControl+Shift+'", createOrOpenWindow);
   if (!ret) throw new Error('Keystroke registration failed.');
 
-  // // Initialize tray icon
-  // const icoPath = url.format({
-  //   pathname: path.normalize(`${__dirname}/icon.ico`),
-  //   protocol: 'file',
-  //   slashes: true,
-  // });
+  // Initialize tray icon
+  tray = new Tray(`${__dirname}\\icon.png`);
+  const contextMenu = Menu.buildFromTemplate([
+    { label: 'Open', click: createOrOpenWindow },
+    { label: 'Quit', role: 'quit' },
+  ]);
+  tray.setToolTip('Quick Synonym Finder');
+  tray.setContextMenu(contextMenu);
 
-  // tray = new Tray(icoPath);
-  // const contextMenu = Menu.buildFromTemplate([
-  //   { label: 'Open', click: createOrOpenWindow },
-  //   { label: 'Quit', role: 'quit' },
-  // ]);
-  // tray.setToolTip('Quick Synonym Finder');
-  // tray.setContextMenu(contextMenu);
-
-  // tray.addListener('click', createOrOpenWindow);
+  tray.addListener('click', createOrOpenWindow);
 
   // Intercept React file calls and replace absolute with relative URLs.
   protocol.interceptFileProtocol('file', (request, callback) => {
