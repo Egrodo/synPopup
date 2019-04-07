@@ -97,6 +97,10 @@ function App() {
     }, 3000);
   };
 
+  const changeHeight = addedHeight => {
+    AppRef.current.style.maxHeight = `${188 + addedHeight}px`;
+  };
+  
   useEffect(() => {
     // First, when app starts make everything visible.
     document.body.style.opacity = 1;
@@ -129,10 +133,6 @@ function App() {
   useEffect(() => {
     if (result.error) displayMsg(result.errorMsg);
   }, [result]);
-
-  const changeHeight = addedHeight => {
-    AppRef.current.style.maxHeight = `${188 + addedHeight}px`;
-  };
 
   return (
     <div className={CSS.App} ref={AppRef}>
